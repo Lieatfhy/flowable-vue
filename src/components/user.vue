@@ -67,7 +67,6 @@ export default {
                 .get(`http://115.159.154.194/police-support-platform/users/by-organ-unit?organUnitId=${data.id}`)
                 .then(res=>{
                     this.tableData = res.data
-                    console.log("this.tableData",res);
                 })
         },
         // 获取树形组织数据
@@ -76,7 +75,6 @@ export default {
                 .get('http://115.159.154.194/police-support-platform/organ-units/tree')
                 .then(response => {
                     this.tree.push(response.data)
-                    console.log("this.tree",response.data);
                     })
         },
         // 获取用户数据
@@ -85,12 +83,10 @@ export default {
                 .get('http://115.159.154.194/police-support-platform/users/page')
                 .then(res => {
                     this.tableData = res.data.content
-                    console.log("this.tableData",res);
                     })
         },
     },
     created(){
-        console.log("data");
         this.gettree()
         this.getuser()
     }

@@ -152,7 +152,6 @@
         },
         methods: {
             handleNodeClick(data) {
-                console.log(data);
                 this.show = true
                 this.clickgroup.id = data.id
                 this.clickgroup.name = data.name
@@ -161,12 +160,10 @@
                     .get(`http://localhost:9090/modeler/app/rest/admin/groups/${data.id}/users?page=0&pageSize=50`)
                     .then(res=>{
                         this.tableData = res.data.data
-                        console.log("this.tableData",this.tableData);
                     })
             },
             selectChange(data){
                 this.addgroupmember.id=data
-                console.log("selectChange+data");
             },
             // 新增、编辑组
             groupsucess(){
@@ -184,7 +181,6 @@
                             this.$message.success('新增成功')
                         })
                         .catch(err=>{
-                            console.log('err',err.message);
                             this.$message.error(err.message);
                         })
                 }else{
@@ -201,7 +197,6 @@
                             this.$message.success('编辑成功')
                         })
                         .catch(err=>{
-                            console.log('err',err.message);
                             this.$message.error(err.message);
                         })
                 }
@@ -227,7 +222,6 @@
                         .get('http://localhost:9090/modeler/app/rest/admin/users?sort=idAsc&start=0')
                         .then(res=>{
                             this.options=res.data.data
-                            console.log("this.options",this.options);
                         })
                         .catch(err=>{
                             this.$message.error(err);
@@ -247,7 +241,6 @@
                             this.$message.success('新增成功')
                         })
                         .catch(err=>{
-                            console.log('err',err.message);
                             this.$message.error(err.message);
                         })
             },
@@ -257,7 +250,6 @@
                     .get('http://localhost:9090/modeler/app/rest/admin/groups?functional=true')
                     .then(response => {
                         this.group=response.data
-                        console.log("this.group",response.data);
                     })
                     .catch(err=>{
                         this.$message.error(err);
@@ -269,12 +261,10 @@
                     .get('http://localhost:9090/modeler/app/rest/admin/users?sort=idAsc&start=0')
                     .then(res => {
                         this.tableData = res.data.data
-                        console.log("this.tableData",res);
                     })
             },
             // 删除组中用户dialog
             decectMember(data){
-                console.log("decectMember+data",data);
                 this.deletetip2 = true
                 this.clickmember.id = data.id
                 this.clickmember.name = data.fullName
@@ -305,13 +295,11 @@
                             this.getgroup()
                         })
                         .catch(err=>{
-                            console.log('err',err.message);
                             this.$message.error(err.message);
                         })
             }
         },
         created(){
-            console.log("data");
             this.getgroup()
             this.getuser()
         }
