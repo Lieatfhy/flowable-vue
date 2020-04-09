@@ -2,10 +2,10 @@
   <div class="user">
     <!-- 树形组织结构 -->
     <div class="tree">
-        <el-input  v-model="input" placeholder="请输入内容">
+        <el-input  v-model="filterText" placeholder="请输入内容">
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
-        <el-tree :data="tree.treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+        <el-tree :data="tree" ref="tree" :filter-node-method="filterNode" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
     </div>
     <div class="usertable">
         <div class="title">用户列表</div>
@@ -42,38 +42,27 @@ export default {
     name: 'user',
     data () {
         return {
-            input:'',
+            filterText:'',
             defaultProps: {
                 children: 'lowers',
                 label: 'name'
             },
-            tree: {
-                treeData:[],
-                copytreeDate:[]
-            },
+            tree: [],
             tableData: [],
         }
     },
     watch:{
-        'input':{
-            handler(newVal){
-                console.log(newVal);
-                console.log(newVal!='');
-                if(newVal!=''){
-                    this.tree.treeData = this.tree.copytreeDate.filter(word=>word==newVal)
-                }else{
-                    this.tree.treeData = this.tree.copytreeDate
-                }
-                console.log(this.tree);
-            }
+        filterText(val) {
+            this.$refs.tree.filter(val);
         }
     },
     methods: {
+        filterNode(value, data) {
+            if (!value) return true;
+            return data.name.indexOf(value) !== -1;
+        },
         handleNodeClick(data) {
-            console.log(data);
-            
             // 获取该组织下的用户
-            
             this.$axios
                 .get(`http://115.159.154.194/police-support-platform/users/by-organ-unit?organUnitId=${data.id}`)
                 .then(res=>{
@@ -86,8 +75,7 @@ export default {
             this.$axios
                 .get('http://115.159.154.194/police-support-platform/organ-units/tree')
                 .then(response => {
-                    this.tree.treeData.push(response.data)
-                    this.tree.copytreeDate.push(response.data)
+                    this.tree.push(response.data)
                     console.log("this.tree",response.data);
                     })
         },

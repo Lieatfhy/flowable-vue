@@ -7,7 +7,7 @@
         </el-input>
         <el-button  type="text" @click="groupEdit('add')">新增组</el-button>
         <el-table
-            :data="group"
+            :data="group.filter(data => !input || data.name.toLowerCase().includes(input.toLowerCase()))"
             style="width: 100%"
             align="left"
             @row-click="handleNodeClick"
