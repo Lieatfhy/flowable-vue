@@ -42,19 +42,19 @@
                 width="200">
             </el-table-column>
             <el-table-column
-                prop="fullName"
+                prop="name"
                 label="姓名"
                 align="center"
                 width="200">
             </el-table-column>
             <el-table-column
-                prop="email"
+                prop="organUnit.name"
                 label="组织机构"
                 align="center"
                 width="200">
             </el-table-column>
             <el-table-column
-                prop="email"
+                prop="policeSign"
                 label="警号"
                 align="center"
                 width="200">
@@ -101,7 +101,7 @@
             <el-option
                 v-for="item in options"
                 :key="item.id"
-                :label="item.fullName"
+                :label="item.name +' ' + item.organUnit.name"
                 :value="item.id"
                 >
             </el-option>
@@ -157,9 +157,9 @@
                 this.clickgroup.name = data.name
                 // 获取该组下的用户
                 this.$axios
-                    .get(`http://localhost:9090/modeler/app/rest/admin/groups/${data.id}/users?page=0&pageSize=50`)
+                    .get(`http://localhost:9090/modeler/groups/${data.id}/users`)
                     .then(res=>{
-                        this.tableData = res.data.data
+                        this.tableData = res.data
                     })
             },
             selectChange(data){
@@ -219,9 +219,9 @@
                 if(data=='add'){
                     this.addgroupMember=true
                     this.$axios
-                        .get('http://localhost:9090/modeler/app/rest/admin/users?sort=idAsc&start=0')
+                        .get('http://localhost:9090/modeler/users/page')
                         .then(res=>{
-                            this.options=res.data.data
+                            this.options=res.data.content
                         })
                         .catch(err=>{
                             this.$message.error(err);
@@ -258,9 +258,9 @@
             // 获取用户数据
             getuser(){
                 this.$axios
-                    .get('http://localhost:9090/modeler/app/rest/admin/users?sort=idAsc&start=0')
+                    .get('http://localhost:9090/modeler/users/page')
                     .then(res => {
-                        this.tableData = res.data.data
+                        this.tableData = res.data.content
                     })
             },
             // 删除组中用户dialog
