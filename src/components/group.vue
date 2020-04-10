@@ -157,7 +157,7 @@
                 this.clickgroup.name = data.name
                 // 获取该组下的用户
                 this.$axios
-                    .get(`http://localhost:9090/modeler/groups/${data.id}`)
+                    .get(`http://localhost:9090/modeler/groups/${data.id}/users`)
                     .then(res=>{
                         this.tableData = res.data
                     })
