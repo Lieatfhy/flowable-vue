@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import {getUserList,getGrouptreeList,getGroupuserList} from '../api/api'
 export default {
     name: 'user',
     data () {
@@ -61,29 +62,23 @@ export default {
             if (!value) return true;
             return data.name.indexOf(value) !== -1;
         },
+        // 获取该组织下的用户
         handleNodeClick(data) {
-            // 获取该组织下的用户
-            this.$axios
-                .get(`http://localhost:9090/modeler/users/by-organ-unit?organUnitId=${data.id}`)
-                .then(res=>{
-                    this.tableData = res.data
-                })
+            getGroupuserList(data.id).then(res=>{
+                this.tableData = res
+            })
         },
         // 获取树形组织数据
         gettree(){
-            this.$axios
-                .get('http://localhost:9090/modeler/organ-units/tree')
-                .then(response => {
-                    this.tree.push(response.data)
-                    })
+            getGrouptreeList().then(res => {
+                this.tree.push(res)
+            })
         },
         // 获取用户数据
         getuser(){
-            this.$axios
-                .get('http://localhost:9090/modeler/users/page')
-                .then(res => {
-                    this.tableData = res.data.content
-                    })
+            getUserList().then(res => {
+                this.tableData = res.content
+            })
         },
     },
     created(){

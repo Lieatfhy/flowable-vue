@@ -116,6 +116,7 @@
 
 <script>
     import { Message } from 'element-ui';
+    import {getUserList,getGroupList,addGroup,editGroup,deleteGroup,addGroupUser,deleteGroupuser,getGroupUser} from '../api/api'
     export default {
         name: 'group',
         data () {
@@ -156,10 +157,8 @@
                 this.clickgroup.id = data.id
                 this.clickgroup.name = data.name
                 // 获取该组下的用户
-                this.$axios
-                    .get(`http://localhost:9090/modeler/groups/${data.id}/users`)
-                    .then(res=>{
-                        this.tableData = res.data
+                getGroupUser(this.clickgroup.id).then(res=>{
+                        this.tableData = res
                     })
             },
             selectChange(data){
@@ -168,37 +167,31 @@
             // 新增、编辑组
             groupsucess(){
                 if(this.editgroup == false){
-                    this.$axios
-                        .post(`http://localhost:9090/modeler/app/rest/admin/groups`,{
-                            id:this.addGroup.id,
-                            name:this.addGroup.name
-                        })
-                        .then(res=>{
-                            this.dialogFormVisible = false
-                            this.addGroup.id = ''
-                            this.addGroup.name = ''
-                            this.getgroup()
-                            this.$message.success('新增成功')
-                        })
-                        .catch(err=>{
-                            this.$message.error(err.message);
-                        })
+                    let data = {
+                        id:this.addGroup.id,
+                        name:this.addGroup.name
+                    }
+                    addGroup(data).then(res=>{
+                        this.dialogFormVisible = false
+                        this.addGroup.id = ''
+                        this.addGroup.name = ''
+                        this.getgroup()
+                        this.$message.success('新增成功')
+                    }).catch(err=>{
+                        this.$message.error(err.message);
+                    })
                 }else{
-                    this.$axios
-                        .put(`http://localhost:9090/modeler/app/rest/admin/groups/${this.clickgroup.id}`,{
-                            name:this.addGroup.name
-                        })
-                        .then(res=>{
-                            this.dialogFormVisible = false
-                            this.clickgroup.name = this.addGroup.name
-                            this.addGroup.id = ''
-                            this.addGroup.name = ''
-                            this.getgroup()
-                            this.$message.success('编辑成功')
-                        })
-                        .catch(err=>{
-                            this.$message.error(err.message);
-                        })
+                    let data = {name:this.addGroup.name}
+                    editGroup(this.clickgroup.id,data).then(res=>{
+                        this.dialogFormVisible = false
+                        this.clickgroup.name = this.addGroup.name
+                        this.addGroup.id = ''
+                        this.addGroup.name = ''
+                        this.getgroup()
+                        this.$message.success('编辑成功')
+                    }).catch(err=>{
+                        this.$message.error(err.message);
+                    })
                 }
             },
             // 新增、编辑组弹框
@@ -218,50 +211,40 @@
             GroupMember(data){
                 if(data=='add'){
                     this.addgroupMember=true
-                    this.$axios
-                        .get('http://localhost:9090/modeler/users/page')
-                        .then(res=>{
-                            this.options=res.data.content
-                        })
-                        .catch(err=>{
-                            this.$message.error(err);
-                        })
+                    getUserList().then(res=>{
+                        this.options=res.content
+                    }).catch(err=>{
+                        this.$message.error(err);
+                    })
                 }
             },
             // 组成员增加请求
             addmember(){
-                // http://localhost:9090/modeler/app/rest/admin/groups/3/members/1
-                this.$axios
-                        .post(`http://localhost:9090/modeler/app/rest/admin/groups/${this.clickgroup.id}/members/${this.addgroupmember.id}`)
-                        .then(res=>{
-                            this.addgroupMember = false
-                            this.addgroupmember.id = ''
-                            this.addgroupmember.name = ''
-                            this.handleNodeClick(this.clickgroup)
-                            this.$message.success('新增成功')
-                        })
-                        .catch(err=>{
-                            this.$message.error(err.message);
-                        })
+                addGroupUser(this.clickgroup.id,this.addgroupmember.id).then(res=>{
+                    this.addgroupMember = false
+                    this.addgroupmember.id = ''
+                    this.addgroupmember.name = ''
+                    this.handleNodeClick(this.clickgroup)
+                    this.$message.success('新增成功')
+                }).catch(err=>{
+                    this.$message.error(err.message);
+                })
             },
             // 获取组数据
             getgroup(){
-                this.$axios
-                    .get('http://localhost:9090/modeler/app/rest/admin/groups?functional=true')
-                    .then(response => {
-                        this.group=response.data
-                    })
-                    .catch(err=>{
-                        this.$message.error(err);
-                    })
+                getGroupList().then(response => {
+                    this.group=response
+                }).catch(err=>{
+                    this.$message.error(err);
+                })
             },
             // 获取用户数据
             getuser(){
-                this.$axios
-                    .get('http://localhost:9090/modeler/users/page')
-                    .then(res => {
-                        this.tableData = res.data.content
-                    })
+                getUserList().then(res => {
+                    this.tableData = res.content
+                }).catch(err=>{
+                    this.$message.error(err);
+                })
             },
             // 删除组中用户dialog
             decectMember(data){
@@ -271,9 +254,7 @@
             },
             // 删除组中用户请求
             delectMemberFucrion(){
-                this.$axios
-                    .delete(`http://localhost:9090/modeler/app/rest/admin/groups/${this.clickgroup.id}/members/${this.clickmember.id}`)
-                    .then(res=>{
+                deleteGroupuser(this.clickgroup.id,this.clickmember.id).then(res=>{
                             this.handleNodeClick(this.clickgroup)
                             this.deletetip2 = false
                             this.$message.success('删除成功')
@@ -285,18 +266,15 @@
                 this.addGroup.name = ''
             },
             delectgroup(){
-                this.$axios
-                        .delete(`http://localhost:9090/modeler/app/rest/admin/groups/${this.clickgroup.id}`)
-                        .then(res=>{
-                            this.clickgroup.id = '',
-                            this.$message.success("删除成功")
-                            this.deletetip = false
-                            this.getuser()
-                            this.getgroup()
-                        })
-                        .catch(err=>{
-                            this.$message.error(err.message);
-                        })
+                deleteGroup(this.clickgroup.id).then(res=>{
+                    this.clickgroup.id = '',
+                    this.$message.success("删除成功")
+                    this.deletetip = false
+                    this.getuser()
+                    this.getgroup()
+                }).catch(err=>{
+                    this.$message.error(err.message);
+                })
             }
         },
         created(){
